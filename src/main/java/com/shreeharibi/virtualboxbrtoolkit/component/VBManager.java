@@ -13,15 +13,9 @@ import org.virtualbox_6_1.VirtualBoxManager;
 public class VBManager {
     @Autowired
     private VirtualBoxManager virtualBoxManager;
-    private String url;
-    private String username;
-    private String password;
 
     public VBManager() {
         virtualBoxManager = VirtualBoxManager.createInstance(null);
-        url = "http://localhost:18083";
-        System.out.println("Connecting to " + url);
-        virtualBoxManager.connect(url, null, null);
     }
 
     @Bean
