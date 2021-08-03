@@ -18,6 +18,11 @@ public class ManagerController {
 
     @GetMapping("about")
     public String getDescription() {
-        return "virtual box brtoolkit is up. " + "virtual-box version:" + managerService.getVirtualBoxVersion();
+        try {
+            return "virtual box brtoolkit is up. " + "virtual-box version:" + managerService.getVirtualBoxVersion();
+        }
+        catch (IllegalStateException e) {
+            return e.getMessage();
+        }
     }
 }
