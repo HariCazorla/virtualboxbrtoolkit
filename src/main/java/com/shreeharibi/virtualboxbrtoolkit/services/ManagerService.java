@@ -1,40 +1,34 @@
 package com.shreeharibi.virtualboxbrtoolkit.services;
 
 import com.shreeharibi.virtualboxbrtoolkit.component.VBManager;
+import com.shreeharibi.virtualboxbrtoolkit.model.VirtualDisk;
+import com.shreeharibi.virtualboxbrtoolkit.model.VirtualMachine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.virtualbox_6_1.IMachine;
-import org.virtualbox_6_1.IVirtualBox;
-import org.virtualbox_6_1.VBoxException;
-import org.virtualbox_6_1.VirtualBoxManager;
+import org.virtualbox_6_1.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class ManagerService {
 
-    private VBManager vbManager;
-    private String url;
-
+    private IVirtualBox vbox;
 
     @Autowired
     public ManagerService(VBManager vbManager) {
-        this.vbManager = vbManager;
-        url = "http://localhost:18083";
+        vbox = vbManager.getVirtualBoxInstance();
     }
 
     public String getVirtualBoxVersion() {
         String version = null;
         try {
-            VirtualBoxManager virtualBoxManager = vbManager.getVirtualBoxManager();
-            virtualBoxManager.connect(url, null, null);
-            IVirtualBox vbox = vbManager.getVirtualBoxManager().getVBox();
             if (vbox != null) {
                 version = vbox.getVersion();
             }
-            virtualBoxManager.disconnect();
         }
         catch (VBoxException e) {
             e.printStackTrace();
@@ -46,13 +40,9 @@ public class ManagerService {
     public List<String> getVirtualMachines() {
         List<String> result = new ArrayList<>();
         try {
-            VirtualBoxManager virtualBoxManager = vbManager.getVirtualBoxManager();
-            virtualBoxManager.connect(url, null, null);
-            IVirtualBox vbox = vbManager.getVirtualBoxManager().getVBox();
             List<IMachine> vmList = vbox.getMachines();
-
             result = vmList.stream()
-                                    .map(m -> m.getName())
+                                    .map(m -> m.getId())
                                     .collect(Collectors.toList());
 
         } catch (VBoxException e) {
@@ -60,5 +50,18 @@ public class ManagerService {
             throw new IllegalStateException("Failed to fetch the VM information.");
         }
         return result;
+    }
+
+    public VirtualMachine getVirtualMachineSummary(String vmId) {
+        try {
+            String result = null;
+            VirtualMachine vm = new VirtualMachine();
+            IMachine vmObj = vbox.getMachines().stream()
+                    .filter(m -> m.getId().contentEquals(vmId))
+                    .collect(Collectors.toList()).get(0);
+            return vm.createVMfromIMachine(vmObj);
+        } catch (VBoxException e) {
+            throw new IllegalStateException("Failed to create VM summary.");
+        }
     }
 }
