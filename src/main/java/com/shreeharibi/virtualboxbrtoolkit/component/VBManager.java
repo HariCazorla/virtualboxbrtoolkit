@@ -39,7 +39,7 @@ public class VBManager {
             virtualBoxManager.connect(url, null, null);
             vbox = virtualBoxManager.getVBox();
         } catch (VBoxException e) {
-            throw new IllegalStateException("Failed to connect to the virtualboxmanager");
+            System.out.println("Failed to connect to the virtualboxmanager");
         }
     }
 
@@ -49,7 +49,7 @@ public class VBManager {
             System.out.println("Disconnecting...");
             virtualBoxManager.disconnect();
         } catch (VBoxException e) {
-            throw new IllegalStateException("Failed to disconnect from the virtualboxmanager");
+            System.out.println("Failed to disconnect from the virtualboxmanager");
         }
     }
 
