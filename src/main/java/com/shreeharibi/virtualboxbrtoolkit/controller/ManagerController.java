@@ -2,10 +2,7 @@ package com.shreeharibi.virtualboxbrtoolkit.controller;
 
 import com.shreeharibi.virtualboxbrtoolkit.services.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +33,18 @@ public class ManagerController {
             return managerService.getVirtualMachines();
         } catch (IllegalStateException e) {
             return List.of(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "{vmID}")
+    @ResponseBody
+    public Object getVirtualMachineSummary(
+            @PathVariable("vmID") String vmID
+    ) {
+        try {
+            return managerService.getVirtualMachineSummary(vmID);
+        } catch (IllegalStateException e) {
+            return e.getMessage();
         }
     }
 }
