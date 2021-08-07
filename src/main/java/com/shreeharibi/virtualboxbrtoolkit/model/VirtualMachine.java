@@ -57,23 +57,4 @@ public class VirtualMachine {
                 ", configPath='" + configPath + '\'' +
                 '}';
     }
-
-    public VirtualMachine createVMfromIMachine(IMachine obj){
-        name = obj.getName();
-        description = obj.getDescription();
-        configPath = obj.getSettingsFilePath();
-        List<IMediumAttachment> mediumAttachments = obj.getMediumAttachments();
-        for (IMediumAttachment medium:
-             mediumAttachments) {
-            if(medium.getMedium() != null){
-                VirtualDisk disk = new VirtualDisk();
-                disk.setName(medium.getMedium().getName());
-                disk.setSize(medium.getMedium().getLogicalSize());
-                disk.setPath(medium.getMedium().getLocation());
-                disk.setController(medium.getController());
-                addDisk(disk);
-            }
-        }
-        return this;
-    }
 }
