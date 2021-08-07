@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.virtualbox_6_1.ISession;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VBoxException;
 import org.virtualbox_6_1.VirtualBoxManager;
@@ -20,6 +21,8 @@ public class VBManager {
     private IVirtualBox vbox;
 
     private VirtualBoxManager virtualBoxManager;
+
+    private ISession session;
 
     @Value("${virtualbox.vboxwebsrv.url}")
     private String url;
@@ -38,6 +41,7 @@ public class VBManager {
             System.out.println("Connecting...");
             virtualBoxManager.connect(url, null, null);
             vbox = virtualBoxManager.getVBox();
+            session = virtualBoxManager.getSessionObject();
         } catch (VBoxException e) {
             System.out.println("Failed to connect to the virtualboxmanager");
         }
@@ -56,5 +60,13 @@ public class VBManager {
     @Bean
     public IVirtualBox getVirtualBoxInstance() {
         return vbox;
+    }
+
+    public ISession getSession() {
+        return session;
+    }
+
+    public void setSession(ISession session) {
+        this.session = session;
     }
 }
