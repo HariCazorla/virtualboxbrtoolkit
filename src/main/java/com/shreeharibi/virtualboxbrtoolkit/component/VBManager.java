@@ -69,4 +69,8 @@ public class VBManager {
     public void setSession(ISession session) {
         this.session = session;
     }
+
+    public VirtualBoxManager getVirtualBoxManager() {
+        return virtualBoxManager;
+    }
 }
