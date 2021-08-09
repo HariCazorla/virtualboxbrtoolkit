@@ -47,16 +47,4 @@ public class ManagerController {
             return e.getMessage();
         }
     }
-
-    @PostMapping(path = "{vmID}/backup")
-    public String backupVirtualMachine(
-            @PathVariable("vmID") String vmID,
-            @RequestParam(required = true) boolean encryption
-    ) {
-        try {
-            return managerService.backupVirtualMachine(vmID, encryption);
-        } catch (IllegalStateException e) {
-            return e.getMessage();
-        }
-    }
 }
