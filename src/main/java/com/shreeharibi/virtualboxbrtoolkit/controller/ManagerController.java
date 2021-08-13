@@ -47,4 +47,18 @@ public class ManagerController {
             return e.getMessage();
         }
     }
+
+    @GetMapping("{vmID}/rename/{newName}")
+    public boolean renameVirtualMachine(
+            @PathVariable("vmID") String vmID,
+            @PathVariable("newName") String newName
+    ) {
+        try {
+            System.out.println("Rename vm with id " + vmID + " to " + newName);
+            return managerService.renameVirtualMachine(vmID, newName);
+        }
+        catch (IllegalStateException e) {
+            return false;
+        }
+    }
 }

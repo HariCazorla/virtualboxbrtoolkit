@@ -5,6 +5,7 @@ import com.shreeharibi.virtualboxbrtoolkit.model.VirtualDisk;
 import com.shreeharibi.virtualboxbrtoolkit.model.VirtualMachine;
 import com.shreeharibi.virtualboxbrtoolkit.utils.Utils;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.virtualbox_6_1.*;
@@ -65,6 +66,21 @@ public class ManagerService {
                     .filter(m -> m.getId().contentEquals(vmId))
                     .collect(Collectors.toList()).get(0);
             return Utils.createVMfromIMachine(vmObj);
+        } catch (VBoxException e) {
+            throw new IllegalStateException("Failed to create VM summary.");
+        }
+    }
+
+    public boolean renameVirtualMachine(String vmId, String newName) {
+        try {
+            String result = null;
+            IMachine vmObj = vbox.getMachines().stream()
+                    .filter(m -> m.getId().contentEquals(vmId))
+                    .collect(Collectors.toList()).get(0);
+            vmObj.lockMachine(session, LockType.Shared);
+            session.getMachine().setName(newName);
+            session.getMachine().saveSettings();
+            return true;
         } catch (VBoxException e) {
             throw new IllegalStateException("Failed to create VM summary.");
         }
