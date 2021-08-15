@@ -1,5 +1,6 @@
 package com.shreeharibi.virtualboxbrtoolkit.controller;
 
+import com.shreeharibi.virtualboxbrtoolkit.exceptions.VirtualMachineException;
 import com.shreeharibi.virtualboxbrtoolkit.services.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ManagerController {
     public List<String> getVirtualMachines() {
         try {
             return managerService.getVirtualMachines();
-        } catch (IllegalStateException e) {
+        } catch (VirtualMachineException e) {
             return List.of(e.getMessage());
         }
     }
@@ -43,7 +44,7 @@ public class ManagerController {
     ) {
         try {
             return managerService.getVirtualMachineSummary(vmID);
-        } catch (IllegalStateException e) {
+        } catch (VirtualMachineException e) {
             return e.getMessage();
         }
     }
@@ -57,7 +58,7 @@ public class ManagerController {
             System.out.println("Rename vm with id " + vmID + " to " + newName);
             return managerService.renameVirtualMachine(vmID, newName);
         }
-        catch (IllegalStateException e) {
+        catch (VirtualMachineException e) {
             return false;
         }
     }
