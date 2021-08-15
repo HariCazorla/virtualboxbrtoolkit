@@ -1,5 +1,6 @@
 package com.shreeharibi.virtualboxbrtoolkit.component;
 
+import com.shreeharibi.virtualboxbrtoolkit.exceptions.VBoxConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,11 +28,11 @@ public class VBManager {
     @Value("${virtualbox.vboxwebsrv.url}")
     private String url;
 
-    public VBManager() {
+    public VBManager() throws VBoxConnectionException {
         try {
             virtualBoxManager = VirtualBoxManager.createInstance(null);
         } catch (VBoxException e) {
-            throw new IllegalStateException("Failed to instantiate virtualboxmanager");
+            throw new VBoxConnectionException("Failed to instantiate virtualboxmanager");
         }
     }
 

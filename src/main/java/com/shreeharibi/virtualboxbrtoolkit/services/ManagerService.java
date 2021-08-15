@@ -1,11 +1,13 @@
 package com.shreeharibi.virtualboxbrtoolkit.services;
 
 import com.shreeharibi.virtualboxbrtoolkit.component.VBManager;
+import com.shreeharibi.virtualboxbrtoolkit.exceptions.VirtualMachineException;
 import com.shreeharibi.virtualboxbrtoolkit.model.VirtualDisk;
 import com.shreeharibi.virtualboxbrtoolkit.model.VirtualMachine;
 import com.shreeharibi.virtualboxbrtoolkit.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.virtualbox_6_1.*;
@@ -23,6 +25,7 @@ public class ManagerService {
 
     private IVirtualBox vbox;
     private ISession session;
+    Logger logger = LoggerFactory.getLogger(ManagerService.class);
 
     @Autowired
     public ManagerService(VBManager vbManager) {
@@ -44,45 +47,52 @@ public class ManagerService {
         return version;
     }
 
-    public List<String> getVirtualMachines() {
+    public List<String> getVirtualMachines() throws VirtualMachineException {
         List<String> result = new ArrayList<>();
         try {
+            logger.info("Fetching the virtual machine instances");
             List<IMachine> vmList = vbox.getMachines();
             result = vmList.stream()
                                     .map(m -> m.getId())
                                     .collect(Collectors.toList());
 
         } catch (VBoxException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Failed to fetch the VM information.");
+            throw new VirtualMachineException("Failed to fetch the virtual machine instances", e);
         }
         return result;
     }
 
-    public VirtualMachine getVirtualMachineSummary(String vmId) {
+    public VirtualMachine getVirtualMachineSummary(String vmId) throws VirtualMachineException {
         try {
+            logger.info("Fetching the virtual machine instances");
             String result = null;
             IMachine vmObj = vbox.getMachines().stream()
                     .filter(m -> m.getId().contentEquals(vmId))
                     .collect(Collectors.toList()).get(0);
+            logger.info("creating virtual machine summary");
             return Utils.createVMfromIMachine(vmObj);
         } catch (VBoxException e) {
-            throw new IllegalStateException("Failed to create VM summary.");
+            throw new VirtualMachineException("Failed to fetch the virtual machine instances.");
         }
     }
 
-    public boolean renameVirtualMachine(String vmId, String newName) {
+    public boolean renameVirtualMachine(String vmId, String newName) throws VirtualMachineException {
         try {
+            logger.info("Fetching the virtual machine instances");
             String result = null;
             IMachine vmObj = vbox.getMachines().stream()
                     .filter(m -> m.getId().contentEquals(vmId))
                     .collect(Collectors.toList()).get(0);
+            logger.info(vmObj.getName() + ": attempting to lock the virtual machine");
             vmObj.lockMachine(session, LockType.Shared);
+            logger.info(vmObj.getName() + ": lock the virtual machine successfully");
             session.getMachine().setName(newName);
+            logger.info(vmObj.getName() + ": attempting to rename the virtual machine");
             session.getMachine().saveSettings();
+            logger.info(vmObj.getName() + ": rename virtual machine successfully");
             return true;
         } catch (VBoxException e) {
-            throw new IllegalStateException("Failed to create VM summary.");
+            throw new VirtualMachineException("Failed to rename virtual machine.");
         }
     }
 }
